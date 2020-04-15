@@ -1,0 +1,82 @@
+Ed's Game Engine Documentation 04/15/20
+
+GameObject
+    Description:
+        A GameObject represents an object in the scene. When one is instantiated, it is added to the scene. A GameObject will always have a transform, which stores information conserning the position, rotation, and scaling of itself. It will also have a list of components, which can alter the GameObject in different ways.
+        When constructing a GameObject, it takes in 2 arguments. The first is mandatory, and is of type Vector2. This Vector2 tells the player the X and Y position of which they will be instantiated at. The second is optional, it's an array of components to be added to the GameObject. Each GameObject can not have more than 1 component of the same type.
+    Constructor:
+        new GameObject(Vector2)
+            Constructs a GameObject with the position of argument1 and adds it to the scene.
+        new GameObject(Vector2, Array)
+            Returns a GameObject with the position of argument1 and components of argument2 and adds it to the scene.
+    Properties:
+        transform (Transform)
+            Contains all info about the position, rotation, and scaling of the GameObject
+        components (Array)
+            List of all components in a GameObject
+    Methods:
+        addComponents(Array)
+            Will add all components in argument 1 to the GameObject.
+        setComponents(Array)
+            Sets components in the GameObject to argument 1.
+        getComponent(String)
+            Returns component of GameObject with the type of argument 1. Error value is null
+        getComponentID(String)
+            Returns ID of selected component in component list with the type of argument 1. Error value is -1.
+
+Component
+    Description:
+        Multiple components can be added to a GameObject to alter it's properties intially or in real-time. Each GameObject cannot have more than one of each component.
+    Types:
+        Transform
+            Description:
+                Contains all info about the position, rotation, and scaling of the GameObject. It exists outside of the component list and can be accessed by GameObject.transform
+            Constructor:
+                new Transform(Vector2)
+                    Returns a Transform with the position of argument 1
+            Properties:
+                position (Vector2)
+                    Vector2 that contains X and Y of the GameObject
+                rotation (Number)
+                    Value in degrees that the GameObject is rotated around the Z Axis
+                scale (Vector2)
+                    Vector2 that contains width and height of the GameObject
+        Renderer
+            Description:
+                Contains information about how a GameObject should be rendered.
+            Constructor:
+                new Renderer(Array)
+                    Creates a new Renderer using RGB solid colors. Argument 1 holds 3 values, one for R, G, and B.
+                new Renderer(String)
+                    Creates a new Renderer using an image. Argument 1 is the url for the image.
+            Properties:
+                data (Image OR String)
+                    A property containing an Image Object or hex code depending on what kind of Renderer it is.
+                dataType (String)
+                    A string that contains "color" or "image" depending on what kind of Renderer it is.
+        Camera
+            Description:
+                Holds all necessary information that a GameObject needs to be a Camera. To change the camera that is rendering to the screen, use the setCamera() function.
+            Constructor:
+                new Camera(GameObject, tilesize)
+                    Creates a Camera component drawing with a tilesize of argument 2. Argument 1 MUST BE the GameObject that contains this new component.
+            Properties:
+                tilesize (number)
+                    Size of tiles that camera is drawing (in pixels)
+                follow (GameObject)
+                    Default is null. Camera will smoothly follow this GameObject, with a speed of followSpeed.
+                followSpeed (number)
+                    Default is 10. Camera will follow a GameObject with this speed. 1 is instantly following. The higher the number, the slower it follows
+            Methods:
+                setFrameRate(Number)
+                    Sets Frame Rate to argument 1. Default is 60.
+
+Global Functions
+    preload
+        Called as soon as the engine is loaded
+    setup
+        Called when everything on the window is loaded
+    update
+        Called every Frame
+    setCamera(GameObject)
+        Will set Camera drawing to the screen to argument 1.

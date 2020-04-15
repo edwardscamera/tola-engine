@@ -79,14 +79,6 @@ class GameObject {
         }
         return -1;
     }
-    hasComponent(s) {
-        for(let j = 0; j < this.components.length; j++) {
-            if (this.components[j].constructor.name == s) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
 class Transform {
     constructor(v) {
@@ -125,7 +117,7 @@ class Camera {
     renderScene(scene) {
         this.display.clearRect(0, 0, windowWidth, windowHeight);
         scene.forEach(object => {
-            if (object.hasComponent("Renderer")) {
+            if (object.getComponentID("Renderer") != -1) {
                 if (object.getComponent("Renderer").dataType == "color") {
                     this.display.fillStyle = object.getComponent("Renderer").data;
                     this.display.fillRect((object.transform.position.x - this.parent.transform.position.x) * this.tilesize, (object.transform.position.y - this.parent.transform.position.y) * this.tilesize, object.transform.scale.x * this.tilesize, object.transform.scale.y * this.tilesize);
@@ -138,7 +130,7 @@ class Camera {
         });
     }
     renderGameObject(object) {
-        if (object.hasComponent("Renderer")) {
+        if (object.getComponentID("Renderer") != -1) {
             if (object.getComponent("Renderer").dataType == "color") {
                 this.display.fillStyle = object.getComponent("Renderer").data;
                 this.display.rect((object.transform.position.x - this.parent.transform.position.x) * this.tilesize, (object.transform.position.y - this.parent.transform.position.y) * this.tilesize, object.transform.scale.x * this.tilesize, object.transform.scale.y * this.tilesize);

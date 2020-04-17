@@ -54,6 +54,8 @@ Component
                     A property containing an Image Object or hex code depending on what kind of Renderer it is.
                 dataType (String)
                     A string that contains "color" or "image" depending on what kind of Renderer it is.
+                enabled (Boolean)
+                    Default is true. GameObject will not render if enabled is false.
         Camera
             Description:
                 Holds all necessary information that a GameObject needs to be a Camera. To change the camera that is rendering to the screen, use the setCamera() function.
@@ -67,6 +69,8 @@ Component
                     Default is null. Camera will smoothly follow this GameObject, with a speed of followSpeed.
                 followSpeed (number)
                     Default is 10. Camera will follow a GameObject with this speed. 1 is instantly following. The higher the number, the slower it follows
+                enabled (Boolean)
+                    Default is true. Camera will not run any executed methods if enabled is false.
             Methods:
                 setFrameRate(Number)
                     Sets Frame Rate to argument 1. Default is 60.

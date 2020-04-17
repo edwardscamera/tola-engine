@@ -1,3 +1,6 @@
+/* TODO
+ - KeyPress Component
+*/
 if (typeof preload == "function") {preload()}
 let windowWidth, windowHeight;
 let updateInterval;
@@ -97,12 +100,15 @@ class Renderer {
             this.data = hex;
             this.dataType = "color";
         }else if (typeof data == "string") {
-            this.data = data;
+            let tempImg = document.createElement("img");
+            tempImg.src = data;
+            this.data = tempImg;
             this.dataType = "image";
         }else{
             this.data = null;
             this.dataType = "undefined";
         }
+        this.enabled = true;
     }
 }
 class Camera {
@@ -113,11 +119,13 @@ class Camera {
         this.parent = parent;
         this.follow = null;
         this.followSpeed = 10;
+        this.enabled = true;
     }
     renderScene(scene) {
+        if (!this.enabled) {return}
         this.display.clearRect(0, 0, windowWidth, windowHeight);
         scene.forEach(object => {
-            if (object.getComponentID("Renderer") != -1) {
+            if (object.getComponentID("Renderer") != -1 && object.getComponent("Renderer").enabled) {
                 if (object.getComponent("Renderer").dataType == "color") {
                     this.display.fillStyle = object.getComponent("Renderer").data;
                     this.display.fillRect((object.transform.position.x - this.parent.transform.position.x) * this.tilesize, (object.transform.position.y - this.parent.transform.position.y) * this.tilesize, object.transform.scale.x * this.tilesize, object.transform.scale.y * this.tilesize);
@@ -130,7 +138,8 @@ class Camera {
         });
     }
     renderGameObject(object) {
-        if (object.getComponentID("Renderer") != -1) {
+        if (!this.enabled) {return}
+        if (object.getComponentID("Renderer") != -1 && object.getComponent("Renderer").enabled) {
             if (object.getComponent("Renderer").dataType == "color") {
                 this.display.fillStyle = object.getComponent("Renderer").data;
                 this.display.rect((object.transform.position.x - this.parent.transform.position.x) * this.tilesize, (object.transform.position.y - this.parent.transform.position.y) * this.tilesize, object.transform.scale.x * this.tilesize, object.transform.scale.y * this.tilesize);
@@ -142,6 +151,7 @@ class Camera {
         }
     }
     setFrameRate(n) {
+        if (!this.enabled) {return}
         clearInterval(updateInterval);
         updateInterval = setInterval(function() {
             preUpdate();
@@ -150,6 +160,7 @@ class Camera {
         }, 1000 / Math.clamp(n, 1, 60))
     }
     update() {
+        if (!this.enabled) {return}
         // Camera Follow
         if (this.follow != null) {
             let temp = new Vector2();

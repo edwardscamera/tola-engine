@@ -8,6 +8,7 @@ function setup() {
     box = new GameObject(new Vector2(), [
         new Renderer([0, 0, 0])
     ]);
+    cam.getComponent("Camera").follow = box;
 }
 function update() {
     

@@ -7,18 +7,18 @@ GameObject
     Constructor:
         new GameObject(Vector2)
             Constructs a GameObject with the position of argument1 and adds it to the scene.
-        new GameObject(Vector2, Array)
-            Returns a GameObject with the position of argument1 and components of argument2 and adds it to the scene.
+        new GameObject(Vector2, ...)
+            Returns a GameObject with the position of argument1 and components of all other arguments, and adds it to the scene.
     Properties:
         transform (Transform)
             Contains all info about the position, rotation, and scaling of the GameObject
         components (Array)
             List of all components in a GameObject
     Methods:
-        addComponents(Array)
-            Will add all components in argument 1 to the GameObject.
-        setComponents(Array)
-            Sets components in the GameObject to argument 1.
+        addComponents()
+            Will add all arguments to the GameObject as components.
+        setComponents()
+            Sets components in the GameObject to all arguments.
         getComponent(String)
             Returns component of GameObject with the type of argument 1. Error value is null
         getComponentID(String)

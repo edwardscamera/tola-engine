@@ -1,6 +1,3 @@
-/* TODO
- - KeyPress Component
-*/
 if (typeof preload == "function") {preload()}
 let windowWidth, windowHeight;
 let updateInterval;
@@ -35,36 +32,34 @@ window.onload = function() {
         if (typeof update == "function") {update()}
         postUpdate();
     }, 1000 / 60);
-
-
 }
 class GameObject {
     constructor(v, c) {
         this.transform = new Transform(v);
-        if (arguments.length == 2) {
-            this.components = c;
-        }else{
-            this.components = [];
+        this.components = [];
+        if (arguments.length > 1) {
+            for(let i = 1; i < arguments.length; i++) {this.components.push(arguments[i])}
         }
         Scene.push(this);
     }
-    addComponents(c) {
-        for(let i = 0; i < c.length; c++) {
+    addComponents() {
+        for(let i = 0; i < arguments.length; i++) {
             let checks = 0;
             for(let j = 0; j < this.components.length; j++) {
-                if (c[i].constructor.name == this.components[j].constructor.name) {
+                if (arguments[i].constructor.name == this.components[j].constructor.name) {
                     checks++;
                 }
             }
             if (checks == 0) {
-                this.components.push(c[i]);
+                this.components.push(arguments[i]);
             }else{
-                console.log(c[i].constructor.name + " already exists in GameObject");
+                console.log(arguments[i].constructor.name + " already exists in GameObject");
             }
         }
     }
     setComponents(c) {
-        this.components = c;
+        this.components = [];
+        for(let i = 0; i < arguments.length; i++) {this.components.push(arguments[i])}
     }
     getComponent(s) {
         for(let j = 0; j < this.components.length; j++) {
@@ -127,10 +122,28 @@ class Camera {
         scene.forEach(object => {
             if (object.getComponentID("Renderer") != -1 && object.getComponent("Renderer").enabled) {
                 if (object.getComponent("Renderer").dataType == "color") {
+                    let trans = new Vector2();
+                    trans.x = (object.transform.position.x - this.parent.transform.position.x) * this.tilesize + (object.transform.scale.x / 2 * this.tilesize);
+                    trans.y = (object.transform.position.y - this.parent.transform.position.y) * this.tilesize + (object.transform.scale.y / 2 * this.tilesize);
+                    this.display.translate(trans.x, trans.y);
+                    this.display.rotate(object.transform.rotation * (Math.PI/180));
+                    this.display.translate(-trans.x, -trans.y);
                     this.display.fillStyle = object.getComponent("Renderer").data;
                     this.display.fillRect((object.transform.position.x - this.parent.transform.position.x) * this.tilesize, (object.transform.position.y - this.parent.transform.position.y) * this.tilesize, object.transform.scale.x * this.tilesize, object.transform.scale.y * this.tilesize);
+                    this.display.translate(trans.x, trans.y);
+                    this.display.rotate(-object.transform.rotation * (Math.PI/180));
+                    this.display.translate(-trans.x, -trans.y);
                 }else if (object.getComponent("Renderer").dataType == "image") {
+                    let trans = new Vector2();
+                    trans.x = (object.transform.position.x - this.parent.transform.position.x) * this.tilesize + (object.transform.scale.x / 2 * this.tilesize);
+                    trans.y = (object.transform.position.y - this.parent.transform.position.y) * this.tilesize + (object.transform.scale.y / 2 * this.tilesize);
+                    this.display.translate(trans.x, trans.y);
+                    this.display.rotate(object.transform.rotation * (Math.PI/180));
+                    this.display.translate(-trans.x, -trans.y);
                     this.display.drawImage(object.getComponent("Renderer").data, (object.transform.position.x - this.parent.transform.position.x) * this.tilesize, (object.transform.position.y - this.parent.transform.position.y) * this.tilesize, object.transform.scale.x * this.tilesize, object.transform.scale.y * this.tilesize);
+                    this.display.translate(trans.x, trans.y);
+                    this.display.rotate(-object.transform.rotation * (Math.PI/180));
+                    this.display.translate(-trans.x, -trans.y);
                 }else{
                     console.log("Could not render object" + scene.indexOf(object) + "as it has unsupported render data.");
                 }
@@ -141,10 +154,28 @@ class Camera {
         if (!this.enabled) {return}
         if (object.getComponentID("Renderer") != -1 && object.getComponent("Renderer").enabled) {
             if (object.getComponent("Renderer").dataType == "color") {
+                let trans = new Vector2();
+                trans.x = (object.transform.position.x - this.parent.transform.position.x) * this.tilesize + (object.transform.scale.x / 2 * this.tilesize);
+                trans.y = (object.transform.position.y - this.parent.transform.position.y) * this.tilesize + (object.transform.scale.y / 2 * this.tilesize);
+                this.display.translate(trans.x, trans.y);
+                this.display.rotate(object.transform.rotation * (Math.PI/180));
+                this.display.translate(-trans.x, -trans.y);
                 this.display.fillStyle = object.getComponent("Renderer").data;
-                this.display.rect((object.transform.position.x - this.parent.transform.position.x) * this.tilesize, (object.transform.position.y - this.parent.transform.position.y) * this.tilesize, object.transform.scale.x * this.tilesize, object.transform.scale.y * this.tilesize);
+                this.display.fillRect((object.transform.position.x - this.parent.transform.position.x) * this.tilesize, (object.transform.position.y - this.parent.transform.position.y) * this.tilesize, object.transform.scale.x * this.tilesize, object.transform.scale.y * this.tilesize);
+                this.display.translate(trans.x, trans.y);
+                this.display.rotate(-object.transform.rotation * (Math.PI/180));
+                this.display.translate(-trans.x, -trans.y);
             }else if (object.getComponent("Renderer").dataType == "image") {
+                let trans = new Vector2();
+                trans.x = (object.transform.position.x - this.parent.transform.position.x) * this.tilesize + (object.transform.scale.x / 2 * this.tilesize);
+                trans.y = (object.transform.position.y - this.parent.transform.position.y) * this.tilesize + (object.transform.scale.y / 2 * this.tilesize);
+                this.display.translate(trans.x, trans.y);
+                this.display.rotate(object.transform.rotation * (Math.PI/180));
+                this.display.translate(-trans.x, -trans.y);
                 this.display.drawImage(object.getComponent("Renderer").data, (object.transform.position.x - this.parent.transform.position.x) * this.tilesize, (object.transform.position.y - this.parent.transform.position.y) * this.tilesize, object.transform.scale.x * this.tilesize, object.transform.scale.y * this.tilesize);
+                this.display.translate(trans.x, trans.y);
+                this.display.rotate(-object.transform.rotation * (Math.PI/180));
+                this.display.translate(-trans.x, -trans.y);
             }else{
                 console.log("Could not render object as it has unsupported render data.");
             }
@@ -180,9 +211,9 @@ class Vector2 {
             this.y = 0;
         }
     }
-    lerp(other, speed) {
-        this.x += (other.x - this.x) / speed;
-        this.y += (other.y - this.y) / speed;
+    lerp(target, speed) {
+        this.x += (target.x - this.x) / speed;
+        this.y += (target.y - this.y) / speed;
     }
 }
 function preUpdate() {

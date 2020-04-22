@@ -38,7 +38,13 @@ class GameObject {
         this.transform = new Transform(v);
         this.components = [];
         if (arguments.length > 1) {
-            for(let i = 1; i < arguments.length; i++) {this.components.push(arguments[i])}
+            for(let i = 1; i < arguments.length; i++) {
+                let temp = arguments[i];
+                if (temp.constructor.requiresParent) {
+                    temp.parent = this;
+                }
+                this.components.push(temp);
+            }
         }
         Scene.push(this);
     }
@@ -51,7 +57,12 @@ class GameObject {
                 }
             }
             if (checks == 0) {
-                this.components.push(arguments[i]);
+                let temp = arguments[i];
+                if (temp.constructor.requiresParent) {
+                    temp.parent = this;
+                }
+                this.components.push(temp);
+
             }else{
                 console.log(arguments[i].constructor.name + " already exists in GameObject");
             }
@@ -59,7 +70,13 @@ class GameObject {
     }
     setComponents(c) {
         this.components = [];
-        for(let i = 0; i < arguments.length; i++) {this.components.push(arguments[i])}
+        for(let i = 0; i < arguments.length; i++) {
+            let temp = arguments[i];
+            if (temp.constructor.requiresParent) {
+                temp.parent = this;
+            }
+            this.components.push(temp);
+        }
     }
     getComponent(s) {
         for(let j = 0; j < this.components.length; j++) {
@@ -86,8 +103,39 @@ class Transform {
     }
 }
 class Renderer {
+    static requiresParent = false;
     constructor(data) {
-        if (typeof data == "object") {
+        if (arguments.length == 3) {
+            let hex = "#";
+            hex += arguments[0].toString(16).length == 1 ? "0" + arguments[0].toString(16) : arguments[0].toString(16);
+            hex += arguments[1].toString(16).length == 1 ? "0" + arguments[1].toString(16) : arguments[1].toString(16);
+            hex += arguments[2].toString(16).length == 1 ? "0" + arguments[2].toString(16) : arguments[2].toString(16);
+            this.data = hex;
+            this.dataType = "color";
+        }else if (validURL(data)) {
+            let tempImg = document.createElement("img");
+            tempImg.src = data;
+            this.data = tempImg;
+            this.dataType = "image";
+        }else if (typeof data == "object") {
+            
+        }else if (typeof data == "string") {
+            this.data = data;
+            this.dataType = "color";
+        }else{
+            this.data = null;
+            this.dataType = "undefined";
+            console.log(data.toString() + " is not a valid render type");
+        }
+        this.enabled = true;
+    }
+    setType(data) {
+        if (validURL(data)) {
+            let tempImg = document.createElement("img");
+            tempImg.src = data;
+            this.data = tempImg;
+            this.dataType = "image";
+        }else if (typeof data == "object") {
             let hex = "#";
             hex += data[0].toString(16).length == 1 ? "0" + data[0].toString(16) : data[0].toString(16);
             hex += data[1].toString(16).length == 1 ? "0" + data[1].toString(16) : data[1].toString(16);
@@ -95,23 +143,21 @@ class Renderer {
             this.data = hex;
             this.dataType = "color";
         }else if (typeof data == "string") {
-            let tempImg = document.createElement("img");
-            tempImg.src = data;
-            this.data = tempImg;
-            this.dataType = "image";
+            this.data = data;
+            this.dataType = "color";
         }else{
             this.data = null;
             this.dataType = "undefined";
+            console.log(data.toString() + " is not a valid render type");
         }
-        this.enabled = true;
     }
 }
 class Camera {
-    constructor(parent, tilesize) {
+    static requiresParent = true;
+    constructor(tilesize) {
         this.tilesize = tilesize;
         this.frameRate = 60;
         this.display = document.getElementById("mainDisplay").getContext("2d");
-        this.parent = parent;
         this.follow = null;
         this.followSpeed = 10;
         this.enabled = true;
@@ -126,23 +172,23 @@ class Camera {
                     trans.x = (object.transform.position.x - this.parent.transform.position.x) * this.tilesize + (object.transform.scale.x / 2 * this.tilesize);
                     trans.y = (object.transform.position.y - this.parent.transform.position.y) * this.tilesize + (object.transform.scale.y / 2 * this.tilesize);
                     this.display.translate(trans.x, trans.y);
-                    this.display.rotate(object.transform.rotation * (Math.PI/180));
+                    this.display.rotate(-object.transform.rotation * (Math.PI/180));
                     this.display.translate(-trans.x, -trans.y);
                     this.display.fillStyle = object.getComponent("Renderer").data;
                     this.display.fillRect((object.transform.position.x - this.parent.transform.position.x) * this.tilesize, (object.transform.position.y - this.parent.transform.position.y) * this.tilesize, object.transform.scale.x * this.tilesize, object.transform.scale.y * this.tilesize);
                     this.display.translate(trans.x, trans.y);
-                    this.display.rotate(-object.transform.rotation * (Math.PI/180));
+                    this.display.rotate(object.transform.rotation * (Math.PI/180));
                     this.display.translate(-trans.x, -trans.y);
                 }else if (object.getComponent("Renderer").dataType == "image") {
                     let trans = new Vector2();
                     trans.x = (object.transform.position.x - this.parent.transform.position.x) * this.tilesize + (object.transform.scale.x / 2 * this.tilesize);
                     trans.y = (object.transform.position.y - this.parent.transform.position.y) * this.tilesize + (object.transform.scale.y / 2 * this.tilesize);
                     this.display.translate(trans.x, trans.y);
-                    this.display.rotate(object.transform.rotation * (Math.PI/180));
+                    this.display.rotate(-object.transform.rotation * (Math.PI/180));
                     this.display.translate(-trans.x, -trans.y);
                     this.display.drawImage(object.getComponent("Renderer").data, (object.transform.position.x - this.parent.transform.position.x) * this.tilesize, (object.transform.position.y - this.parent.transform.position.y) * this.tilesize, object.transform.scale.x * this.tilesize, object.transform.scale.y * this.tilesize);
                     this.display.translate(trans.x, trans.y);
-                    this.display.rotate(-object.transform.rotation * (Math.PI/180));
+                    this.display.rotate(object.transform.rotation * (Math.PI/180));
                     this.display.translate(-trans.x, -trans.y);
                 }else{
                     console.log("Could not render object" + scene.indexOf(object) + "as it has unsupported render data.");
@@ -158,23 +204,23 @@ class Camera {
                 trans.x = (object.transform.position.x - this.parent.transform.position.x) * this.tilesize + (object.transform.scale.x / 2 * this.tilesize);
                 trans.y = (object.transform.position.y - this.parent.transform.position.y) * this.tilesize + (object.transform.scale.y / 2 * this.tilesize);
                 this.display.translate(trans.x, trans.y);
-                this.display.rotate(object.transform.rotation * (Math.PI/180));
+                this.display.rotate(-object.transform.rotation * (Math.PI/180));
                 this.display.translate(-trans.x, -trans.y);
                 this.display.fillStyle = object.getComponent("Renderer").data;
                 this.display.fillRect((object.transform.position.x - this.parent.transform.position.x) * this.tilesize, (object.transform.position.y - this.parent.transform.position.y) * this.tilesize, object.transform.scale.x * this.tilesize, object.transform.scale.y * this.tilesize);
                 this.display.translate(trans.x, trans.y);
-                this.display.rotate(-object.transform.rotation * (Math.PI/180));
+                this.display.rotate(object.transform.rotation * (Math.PI/180));
                 this.display.translate(-trans.x, -trans.y);
             }else if (object.getComponent("Renderer").dataType == "image") {
                 let trans = new Vector2();
                 trans.x = (object.transform.position.x - this.parent.transform.position.x) * this.tilesize + (object.transform.scale.x / 2 * this.tilesize);
                 trans.y = (object.transform.position.y - this.parent.transform.position.y) * this.tilesize + (object.transform.scale.y / 2 * this.tilesize);
                 this.display.translate(trans.x, trans.y);
-                this.display.rotate(object.transform.rotation * (Math.PI/180));
+                this.display.rotate(-object.transform.rotation * (Math.PI/180));
                 this.display.translate(-trans.x, -trans.y);
                 this.display.drawImage(object.getComponent("Renderer").data, (object.transform.position.x - this.parent.transform.position.x) * this.tilesize, (object.transform.position.y - this.parent.transform.position.y) * this.tilesize, object.transform.scale.x * this.tilesize, object.transform.scale.y * this.tilesize);
                 this.display.translate(trans.x, trans.y);
-                this.display.rotate(-object.transform.rotation * (Math.PI/180));
+                this.display.rotate(object.transform.rotation * (Math.PI/180));
                 this.display.translate(-trans.x, -trans.y);
             }else{
                 console.log("Could not render object as it has unsupported render data.");
@@ -230,3 +276,8 @@ function postUpdate() {
 function setCamera(cam) {
     display.camera = cam;
 }
+function validURL(st) {
+    if (typeof st != "string") {return false}
+    let res = st.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+    return (res !== null)
+};

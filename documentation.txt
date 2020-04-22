@@ -1,4 +1,4 @@
-Ed's Game Engine Documentation 04/15/20
+Tola Engine Documentation 04/21/20
 
 GameObject
     Description:
@@ -43,12 +43,16 @@ Component
                     Vector2 that contains width and height of the GameObject
         Renderer
             Description:
-                Contains information about how a GameObject should be rendered.
+                Contains information about how a GameObject should be rendered. Accepts hex codes, RGB codes, images, and color strings.
             Constructor:
-                new Renderer(Array)
-                    Creates a new Renderer using RGB solid colors. Argument 1 holds 3 values, one for R, G, and B.
+                new Renderer(Number, Number, Number)
+                    Creates a new Renderer using RGB solid colors.
                 new Renderer(String)
                     Creates a new Renderer using an image. Argument 1 is the url for the image.
+                new Renderer(String)
+                    Creates a new Renderer using a hex color (Ex "#00ff00" for Green)
+                new Renderer(String)
+                    Creates a new Renderer using a color string (Ex "green" for Green)
             Properties:
                 data (Image OR String)
                     A property containing an Image Object or hex code depending on what kind of Renderer it is.
@@ -60,8 +64,8 @@ Component
             Description:
                 Holds all necessary information that a GameObject needs to be a Camera. To change the camera that is rendering to the screen, use the setCamera() function.
             Constructor:
-                new Camera(GameObject, tilesize)
-                    Creates a Camera component drawing with a tilesize of argument 2. Argument 1 MUST BE the GameObject that contains this new component.
+                new Camera(tilesize)
+                    Creates a Camera component drawing with a tilesize of argument 1.
             Properties:
                 tilesize (number)
                     Size of tiles that camera is drawing (in pixels)

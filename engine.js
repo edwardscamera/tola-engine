@@ -117,8 +117,6 @@ class Renderer {
             tempImg.src = data;
             this.data = tempImg;
             this.dataType = "image";
-        }else if (typeof data == "object") {
-            
         }else if (typeof data == "string") {
             this.data = data;
             this.dataType = "color";
@@ -245,6 +243,33 @@ class Camera {
             temp.y = this.follow.transform.position.y - (windowHeight / this.tilesize) / 2 + this.follow.transform.scale.y / 2;
             this.parent.transform.position.lerp(temp, this.followSpeed);
         }
+    }
+}
+class Rigidbody {
+    static requiresParent = true;
+    constructor(type) {
+        this.type = type;
+        this.velocity = new Vector2();
+        this.drag = new Vector2(0.7, 0.7);
+        this.terminalVelocity = 1;
+        this.mass = 1;
+    }
+    addForce(force) {
+        this.velocity.x += force.x;
+        this.velocity.y += force.y;
+    }
+    setForce(force) {
+        this.velocity = force;
+    }
+    update() {
+        if (this.type == 1) {return}
+        this.parent.transform.position.x += this.velocity.x;
+        this.parent.transform.position.y += this.velocity.y;
+        this.velocity.x *= this.drag.x;
+        this.velocity.y *= this.drag.y;
+
+        this.velocity.y += this.mass;
+        this.velocity.y = Math.min(this.velocity.y, this.terminalVelocity * this.mass);
     }
 }
 class Vector2 {

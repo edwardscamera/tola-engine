@@ -78,6 +78,28 @@ Component
             Methods:
                 setFrameRate(Number)
                     Sets Frame Rate to argument 1. Default is 60.
+        Rigidbody
+            Description:
+                Adds physics to an object
+            Constructor:
+                new Rigidbody(type)
+                    type represents what kind of rigidbody this instance is. 0 means it can move around, 1 means it isn't affected by physics or gravity.
+            Properties:
+                type (number)
+                    Represents what kind of rigidbody this instance is. 0 means it can move around, 1 means it isn't affected by physics or gravity.
+                velocity (Vector2)
+                    Velocity of GameObject
+                drag (Vector2)
+                    Rate of how an object slows down from velocity. Must be between 0 and 1. 1 means it never slows down, 0 means it slows down instantly.
+                terminalVelocity (number)
+                    The point where gravity can't increase velocity anymore.
+                mass (number)
+                    How heavy an object is
+            Methods:
+                addForce(Vector2)
+                    Adds a force to an object
+                setForce(Vector2)
+                    Sets the force of an object
 
 Global Functions
     preload

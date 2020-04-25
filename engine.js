@@ -247,12 +247,13 @@ class Camera {
 }
 class Rigidbody {
     static requiresParent = true;
-    constructor(type) {
-        this.type = type;
+    constructor(bounce) {
+        this.enabled = true;
         this.velocity = new Vector2();
-        this.drag = new Vector2(0.7, 0.7);
-        this.terminalVelocity = 1;
-        this.mass = 1;
+        
+        this.bounce = bounce;
+
+        this.timeStuck = 0;
     }
     addForce(force) {
         this.velocity.x += force.x;
@@ -262,14 +263,46 @@ class Rigidbody {
         this.velocity = force;
     }
     update() {
-        if (this.type == 1) {return}
-        this.parent.transform.position.x += this.velocity.x;
-        this.parent.transform.position.y += this.velocity.y;
-        this.velocity.x *= this.drag.x;
-        this.velocity.y *= this.drag.y;
-
-        this.velocity.y += this.mass;
-        this.velocity.y = Math.min(this.velocity.y, this.terminalVelocity * this.mass);
+        if (this.enabled) {
+            if (this.parent.getComponent("Collider") != null) {
+                if (this.parent.getComponent("Collider").checkCollision()) {
+                    this.velocity.y *= -this.bounce;
+                }
+            }
+            //this.velocity.y = Math.min(this.velocity.y, this.terminalVelocity);
+            //console.log(this.velocity.y);
+            if (this.timeStuck < 2) {
+                this.velocity.y += 0.01;
+            }
+            this.parent.transform.position.y += this.velocity.y;
+            if (this.parent.getComponent("Collider") != null) {
+                if (this.parent.getComponent("Collider").checkCollision()) {
+                    this.timeStuck++;
+                }else{
+                    this.timeStuck = 0;
+                }
+            }
+        }
+    }
+}
+class Collider {
+    static requiresParent = true;
+    constructor() {
+        this.enabled = true;
+    }
+    checkCollision() {
+        for(let i = 0; i < Scene.length; i++) {
+            if (Scene[i] != this.parent && Scene[i].getComponent("Collider") != null) {
+                if ((this.parent.transform.position.x > Scene[i].transform.position.x && this.parent.transform.position.x < Scene[i].transform.position.x + Scene[i].transform.scale.x) ||
+                    (this.parent.transform.position.x + this.parent.transform.scale.x > Scene[i].transform.position.x && this.parent.transform.position.x + this.parent.transform.scale.x < Scene[i].transform.position.x + Scene[i].transform.scale.x)) {
+                    if ((this.parent.transform.position.y > Scene[i].transform.position.y && this.parent.transform.position.y < Scene[i].transform.position.y + Scene[i].transform.scale.y) ||
+                        (this.parent.transform.position.y + this.parent.transform.scale.y > Scene[i].transform.position.y && this.parent.transform.position.y + this.parent.transform.scale.y < Scene[i].transform.position.y + Scene[i].transform.scale.y)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
 class Vector2 {

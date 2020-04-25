@@ -82,24 +82,29 @@ Component
             Description:
                 Adds physics to an object
             Constructor:
-                new Rigidbody(type)
-                    type represents what kind of rigidbody this instance is. 0 means it can move around, 1 means it isn't affected by physics or gravity.
+                new Rigidbody()
+                    Creates a new Rigidbody
             Properties:
-                type (number)
-                    Represents what kind of rigidbody this instance is. 0 means it can move around, 1 means it isn't affected by physics or gravity.
                 velocity (Vector2)
                     Velocity of GameObject
-                drag (Vector2)
-                    Rate of how an object slows down from velocity. Must be between 0 and 1. 1 means it never slows down, 0 means it slows down instantly.
-                terminalVelocity (number)
-                    The point where gravity can't increase velocity anymore.
-                mass (number)
-                    How heavy an object is
+                bounce (Number)
+                    Between 0 and 1, 0 being no bounce and 1 meaning it bounces with minimal stopping
+                enabled (Boolean)
+                    Default is true. Rigidbody will not update if false
             Methods:
                 addForce(Vector2)
                     Adds a force to an object
                 setForce(Vector2)
                     Sets the force of an object
+        Collider
+            Description:
+                Adds collisions to an object
+            Constructor:
+                new Collider()
+                    Creates a new Collider
+            Properties:
+                enabled (Boolean)
+                    Default is true. Collider will not collide if false
 
 Global Functions
     preload

@@ -32,6 +32,8 @@ window.onload = function() {
         if (typeof update == "function") {update()}
         postUpdate();
     }, 1000 / 60);
+
+    Input.setup();
 }
 class GameObject {
     constructor(v, c) {
@@ -250,39 +252,49 @@ class Rigidbody {
     constructor(bounce) {
         this.enabled = true;
         this.velocity = new Vector2();
-        
+
         this.bounce = bounce;
 
+        this.friction = 0.9;
         this.timeStuck = 0;
     }
     addForce(force) {
         this.velocity.x += force.x;
         this.velocity.y += force.y;
+        
     }
     setForce(force) {
         this.velocity = force;
     }
     update() {
-        if (this.enabled) {
-            if (this.parent.getComponent("Collider") != null) {
-                if (this.parent.getComponent("Collider").checkCollision()) {
-                    this.velocity.y *= -this.bounce;
-                }
-            }
-            //this.velocity.y = Math.min(this.velocity.y, this.terminalVelocity);
-            //console.log(this.velocity.y);
-            if (this.timeStuck < 2) {
-                this.velocity.y += 0.01;
-            }
-            this.parent.transform.position.y += this.velocity.y;
-            if (this.parent.getComponent("Collider") != null) {
-                if (this.parent.getComponent("Collider").checkCollision()) {
-                    this.timeStuck++;
-                }else{
-                    this.timeStuck = 0;
-                }
+        if (!this.enabled) {return}
+        
+        this.parent.transform.position.x += this.velocity.x;
+        this.parent.transform.position.y -= 0.1;
+        if (this.parent.getComponent("Collider") != null && this.parent.getComponent("Collider").checkCollision()) {
+            this.parent.transform.position.x -= this.velocity.x;
+            this.velocity.x = 0;
+        }
+        this.parent.transform.position.y += 0.1;
+        this.velocity.x *= this.friction;
+
+        if (this.parent.getComponent("Collider") != null) {
+            if (this.parent.getComponent("Collider").checkCollision()) {
+                this.velocity.y *= -this.bounce;
             }
         }
+        if (this.timeStuck < 2) {
+            this.velocity.y += 0.01;
+        }
+        this.parent.transform.position.y += this.velocity.y;
+        if (this.parent.getComponent("Collider") != null) {
+            if (this.parent.getComponent("Collider").checkCollision()) {
+                this.timeStuck++;
+            }else{
+                this.timeStuck = 0;
+            }
+        }
+        
     }
 }
 class Collider {
@@ -303,6 +315,30 @@ class Collider {
             }
         }
         return false;
+    }
+}
+class Input {
+    static keyHeld = {};
+    static keyPress = {};
+    static setup() {
+        document.body.addEventListener("keydown", function (evt) {
+            Input.keyHeld[evt.keyCode] = true;
+        });
+        document.body.addEventListener("keyup", function (evt) {
+            Input.keyHeld[evt.keyCode] = false;
+            Input.keyPress[evt.keyCode] = true;
+        });
+    }
+    static clearKeys() {
+        Object.keys(Input.keyPress).forEach(element => {
+            Input.keyPress[element] = false;
+        });
+    }
+    static isKeyDown(key) {
+        return Input.keyHeld[key];
+    }
+    static isKeyPressed(key) {
+        return Input.keyPress[key];
     }
 }
 class Vector2 {
@@ -329,7 +365,7 @@ function preUpdate() {
     display.camera.getComponent("Camera").renderScene(Scene);
 }
 function postUpdate() {
-    
+    Input.clearKeys();
 }
 function setCamera(cam) {
     display.camera = cam;

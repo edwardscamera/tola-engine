@@ -82,13 +82,15 @@ Component
             Description:
                 Adds physics to an object
             Constructor:
-                new Rigidbody()
-                    Creates a new Rigidbody
+                new Rigidbody(bounce)
+                    Creates a new Rigidbody. Argument 1 represents how bouncy the object is
             Properties:
                 velocity (Vector2)
                     Velocity of GameObject
                 bounce (Number)
                     Between 0 and 1, 0 being no bounce and 1 meaning it bounces with minimal stopping
+                friction (Number)
+                    Between 0 and 1, 0 being max friction, 1 being no friction
                 enabled (Boolean)
                     Default is true. Rigidbody will not update if false
             Methods:
@@ -106,6 +108,17 @@ Component
                 enabled (Boolean)
                     Default is true. Collider will not collide if false
 
+Static Components
+    Description:
+        Static components aren't added to GameObjects, and are only used for retreiving data. (Ex. StaticComponent.method())
+    Input
+        Description:
+            Holds information about player Input
+        Methods:
+            isKeyDown(key)
+                Checks if key on keyboard is being held down. Takes in keycode number.
+            isKeyPressed(key)
+                Checks if key on keyboard was pressed. Takes in keycode number.
 Global Functions
     preload
         Called as soon as the engine is loaded

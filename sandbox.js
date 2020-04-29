@@ -8,7 +8,7 @@ function setup() {
         new Vector2(),
         new Renderer("black"),
         new Collider(),
-        new Rigidbody(0.7)
+        new Rigidbody(0)
     );
     cam.getComponent("Camera").follow = box;
 
@@ -19,8 +19,13 @@ function setup() {
         new Collider()
     );
     ground.getComponent("Rigidbody").enabled = false;
-    ground.transform.scale = new Vector2(20, 3);
+    ground.transform.scale = new Vector2(20, 10);
 }
 function update() {
-    
+    if (Input.isKeyDown(39)) {
+        box.getComponent("Rigidbody").addForce(new Vector2(0.05, 0));
+    }
+    if (Input.isKeyDown(37)) {
+        box.getComponent("Rigidbody").addForce(new Vector2(-0.05, 0));
+    }
 }
